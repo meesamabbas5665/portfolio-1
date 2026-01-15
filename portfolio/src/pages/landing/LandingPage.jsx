@@ -6,7 +6,7 @@ import Portfolio from '../portfolio/Portfolio'
 import Contact from '../contact/Contact'
 
 import Service from '../services/Service'
-import Footer from '../../components/footer/Footer'
+// import Footer from '../../components/footer/Footer'
 
 const LandingPage = () => {
   return (
@@ -16,7 +16,6 @@ const LandingPage = () => {
       <About/>
       <Portfolio/>
       <Contact/>
-      <Footer/>
     </div>
   )
 }

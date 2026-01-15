@@ -1,103 +1,121 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const Contact = () => {
+  // 1. State for Form Data
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    timeline: '',
+    email: '',
+    service: '',
+    message: ''
+  });
+
+  const [status, setStatus] = useState(''); // To show success/error message
+
+  // 2. Handle Input Change
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // 3. Handle Form Submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('Sending...');
+
+    try {
+      const response = await fetch('http://localhost:5000/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setStatus('Message sent successfully!');
+        setFormData({ name: '', phone: '', timeline: '', email: '', service: '', message: '' }); // Reset form
+      } else {
+        setStatus('Failed to send message.');
+      }
+    } catch (error) {
+      console.error(error);
+      setStatus('Error sending message.');
+    }
+  };
+
   return (
-    // CHANGED: font-['Inter'] -> font-['Montserrat']
     <section className="bg-black py-20 font-['Montserrat']">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         
-        {/* Header Section */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Contact</h2>
+          <h2 className="text-4xl font-bold text-white mb-4">Contact me</h2>
           <p className="text-gray-400 text-lg">
             Cultivating Connections: Reach Out And Connect With Me
           </p>
         </div>
 
-        {/* Form Section */}
-        <form className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
-            {/* Left Column */}
             <div className="space-y-6">
-              {/* Name Input */}
-              <div>
-                <input 
-                  type="text" 
-                  placeholder="Name" 
-                  className="w-full bg-[#1c1c1c] text-white placeholder-gray-500 rounded-lg px-5 py-4 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all border border-transparent"
-                />
-              </div>
-
-              {/* Phone Input */}
-              <div>
-                <input 
-                  type="tel" 
-                  placeholder="Phone Number" 
-                  className="w-full bg-[#1c1c1c] text-white placeholder-gray-500 rounded-lg px-5 py-4 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all border border-transparent"
-                />
-              </div>
-
-              {/* Timeline Input */}
-              <div>
-                <input 
-                  type="text" 
-                  placeholder="Timeline" 
-                  className="w-full bg-[#1c1c1c] text-white placeholder-gray-500 rounded-lg px-5 py-4 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all border border-transparent"
-                />
-              </div>
+              <input 
+                name="name" value={formData.name} onChange={handleChange} required
+                type="text" placeholder="Name" 
+                className="w-full bg-[#1c1c1c] text-white placeholder-gray-500 rounded-lg px-5 py-4 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-transparent"
+              />
+              <input 
+                name="phone" value={formData.phone} onChange={handleChange}
+                type="tel" placeholder="Phone Number" 
+                className="w-full bg-[#1c1c1c] text-white placeholder-gray-500 rounded-lg px-5 py-4 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-transparent"
+              />
+              <input 
+                name="timeline" value={formData.timeline} onChange={handleChange}
+                type="text" placeholder="Timeline" 
+                className="w-full bg-[#1c1c1c] text-white placeholder-gray-500 rounded-lg px-5 py-4 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-transparent"
+              />
             </div>
 
-            {/* Right Column */}
             <div className="space-y-6">
-              {/* Email Input */}
-              <div>
-                <input 
-                  type="email" 
-                  placeholder="Email" 
-                  className="w-full bg-[#1c1c1c] text-white placeholder-gray-500 rounded-lg px-5 py-4 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all border border-transparent"
-                />
-              </div>
-
-              {/* Service Dropdown */}
+              <input 
+                name="email" value={formData.email} onChange={handleChange} required
+                type="email" placeholder="Email" 
+                className="w-full bg-[#1c1c1c] text-white placeholder-gray-500 rounded-lg px-5 py-4 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-transparent"
+              />
+              
               <div className="relative">
                 <select 
-                  className="w-full bg-[#1c1c1c] text-gray-500 rounded-lg px-5 py-4 appearance-none focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all border border-transparent cursor-pointer"
+                  name="service" value={formData.service} onChange={handleChange}
+                  className="w-full bg-[#1c1c1c] text-gray-500 rounded-lg px-5 py-4 appearance-none focus:outline-none focus:ring-2 focus:ring-orange-500 border border-transparent cursor-pointer"
                 >
-                  <option value="" disabled selected>Service Of Interest</option>
-                  <option value="ui-ux">UI/UX Design</option>
-                  <option value="web-dev">Web Development</option>
-                  <option value="app-dev">App Development</option>
-                  <option value="ai-ml">AI Solutions</option>
+                  <option value="" disabled>Service Of Interest</option>
+                  <option value="UI/UX Design">UI/UX Design</option>
+                  <option value="Web Development">Web Development</option>
+                  <option value="App Development">App Development</option>
+                  <option value="AI Solutions">AI Solutions</option>
                 </select>
-                {/* Custom Chevron Icon */}
                 <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-500">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5"><path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
                 </div>
               </div>
 
-              {/* Project Details Textarea */}
-              <div>
-                <textarea 
-                  placeholder="Project Details..." 
-                  rows="1" // Starts small but user can expand
-                  className="w-full h-[150px] md:h-[135px] bg-[#1c1c1c] text-white placeholder-gray-500 rounded-lg px-5 py-4 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all border border-transparent resize-none"
-                ></textarea>
-              </div>
+              <textarea 
+                name="message" value={formData.message} onChange={handleChange} required
+                placeholder="Project Details..." 
+                rows="1" 
+                className="w-full h-[150px] md:h-[135px] bg-[#1c1c1c] text-white placeholder-gray-500 rounded-lg px-5 py-4 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-transparent resize-none"
+              ></textarea>
             </div>
-
           </div>
 
-          {/* Send Button */}
-          <div className="flex justify-end mt-8">
+          <div className="flex flex-col items-end mt-8">
             <button 
-              type="button" 
+              type="submit" 
               className="px-10 py-3 bg-[#1c1c1c] text-white text-lg font-medium rounded-lg border border-gray-600 hover:bg-orange-500 hover:border-orange-500 hover:text-white transition-all duration-300"
             >
-              Send
+              {status === 'Sending...' ? 'Sending...' : 'Send'}
             </button>
+            {status && <p className="text-orange-500 mt-4">{status}</p>}
           </div>
         </form>
 
